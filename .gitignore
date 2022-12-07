@@ -1,0 +1,24 @@
+# Hide __pycache__ as well
+__pycache__/*
+
+# And python bytecode files, if they somehow appear outside of __pycache__
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore bot configs
+config.json
+
+# Ignore venv files
+.venv
+
+# Ignore vscode things
+.code-workspace
+.vscode
+
+# Logs
+logs/*/*
+*.log
+
+# Misc files for random things
+misc
