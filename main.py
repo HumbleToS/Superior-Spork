@@ -26,6 +26,8 @@ log_fmt = logging.Formatter(
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 
+# Logging stolen from Inferior-Spork (Made by fretgfr)
+
 sh = logging.StreamHandler(sys.stdout)
 sh.setLevel(logging.DEBUG)
 sh.setFormatter(log_fmt)
@@ -49,8 +51,6 @@ _logger = logging.getLogger(__name__)
 # Defining intents and altering it for useless/un-used intents
 intents = discord.Intents.all()
 intents.typing = False
-
-# i fw this - Motzumoto#9773
 
 
 class SuperiorSpork(commands.Bot):
