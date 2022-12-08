@@ -7,6 +7,7 @@ from contextlib import redirect_stdout
 
 import discord
 from discord.ext import commands
+
 from utils import libs
 from utils.checks import *
 
@@ -104,7 +105,6 @@ class DeveloperCommands(commands.Cog, name="developer"):
     @commands.hybrid_command(name="suggest", description="Suggest a feature for the bot")
     @commands.cooldown(1, 60, type=commands.BucketType.user)
     async def suggest(self, ctx: commands.Context):
-
         if ctx.interaction:
             return await ctx.interaction.response.send_modal(SuggestionModal(user=ctx.interaction.user, bot=self.bot))
 
@@ -139,13 +139,11 @@ class DeveloperCommands(commands.Cog, name="developer"):
             f"`{command.name}` {f' - {command.description}' if command.description else ''} {'' if len(command.aliases) == 0 else f'`{command.aliases}`'} {'' if command.usage is None else f'`[{command.usage}]`'}"
             for command in self.bot.get_cog("developer").walk_commands()
         ]
-
         em = discord.Embed(
             title="Bot Admin Commands",
             description="\n".join(adm_cmds),
             color=libs.pastel_color(),
         )
-
         await ctx.send(embed=em)
 
     @commands.group(
@@ -159,13 +157,11 @@ class DeveloperCommands(commands.Cog, name="developer"):
             "Guild Name: {} | Guild ID: {} | Member Count: {:,}".format(guild.name, guild.id, len(guild.members))
             for guild in self.bot.guilds
         ]
-
         await ctx.send(
             "```md\n* Servers -\n# I am in {:,} servers ({})```".format(
                 len(self.bot.guilds), discord.utils.utcnow().strftime("%m-%d-%y")
             )
         )
-
         for m in libs.split_message("\n".join(server_list), "```", "```"):
             await ctx.send(m)
 
