@@ -5,7 +5,7 @@ from discord.ext import commands
 
 from utils import checks, libs
 
-API_KEY = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpZCI6NzMzNTIyNTQxNzZ9.TVUyG_upOBie4X4MkAmNhGeHkCV7Xs7-6NvXMaynii60J_oe6erM4k_VSNfA5rxTm3KPhoMmo-N3wwzxgpxcYQ"
+API_KEY = "api-key-here"  # Oops, this should be moved to a config (It is now regenerated)
 base_url = "https://api.mystb.in"
 
 
