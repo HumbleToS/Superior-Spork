@@ -16,6 +16,10 @@ config.json
 .code-workspace
 .vscode
 
+# Ignore personal cogs
+/cogs/nightmare.py
+/cogs/my_server.py
+
 # Logs
 logs/*/*
 *.log
