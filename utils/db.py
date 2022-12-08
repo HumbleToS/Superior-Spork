@@ -1,22 +1,20 @@
 import asyncio
+import logging
+import pathlib
 
 import asyncpg
+
+_logger = logging.getLogger(__name__)
 
 
 async def build(user='postgres', password='password', database='superior_spork', host='127.0.0.1'):
     conn = await connect_create_if_not_exists(user=user, password=password, database=database, host=host)
     if conn is not None:
-        await conn.execute(
-            """
-        CREATE TABLE IF NOT EXISTS guilds(
-        id bigint PRIMARY KEY,
-        added_by bigint,
-        prefix text
-        );
-        """
-        )
+        with open("./schema.sql", "r") as file:
+            schema_sql = file.read()
+        await conn.execute(schema_sql)
         await conn.close()
-        print("Table(s) created successfully!")
+        _logger.info("Table(s) created successfully!")
 
 
 async def connect_create_if_not_exists(user='postgres', password='password', database='superior_spork', host='127.0.0.1'):
