@@ -10,7 +10,7 @@ _logger = logging.getLogger(__name__)
 async def build(user='postgres', password='password', database='superior_spork', host='127.0.0.1'):
     conn = await connect_create_if_not_exists(user=user, password=password, database=database, host=host)
     if conn is not None:
-        with open(pathlib.Path("./schema/schema.sql"), "r") as file:
+        with open(pathlib.Path("./utils/schema/schema.sql"), "r") as file:
             schema_sql = file.read()
         await conn.execute(schema_sql)
         await conn.close()
