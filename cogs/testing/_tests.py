@@ -5,9 +5,6 @@ from discord.ext import commands
 
 from utils import checks, libs
 
-API_KEY = "api-key-here"  # Oops, this should be moved to a config (It is now regenerated)
-base_url = "https://api.mystb.in"
-
 
 class InviteInfoView(discord.ui.View):
     def __init__(
@@ -111,18 +108,6 @@ class InviteInfoView(discord.ui.View):
 class Testing(commands.Cog, name="Testing"):
     def __init__(self, bot):
         self.bot = bot
-
-    @commands.command()
-    @checks.is_real_owner()
-    async def test(self, ctx):
-        async with self.bot.session.get(
-            f"{base_url}/paste/AloneScoresCustomized", headers={"Authorization": API_KEY}
-        ) as resp:
-            paste = await resp.json()
-        file_name = paste['files'][0]['filename']
-        file_ext = file_name[-2:]
-        file_content = paste['files'][0]['content']
-        await ctx.send(f"Filename: `{file_name}`\n{file_name} content: ```{file_ext}\n{file_content}\n```")
 
     @commands.command()
     @checks.is_real_owner()
