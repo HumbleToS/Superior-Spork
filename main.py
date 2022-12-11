@@ -48,7 +48,7 @@ root_logger.addHandler(HANDLER)
 
 _logger = logging.getLogger(__name__)
 
-# Defining intents and altering it for useless/un-used intents
+# Defining intents and altering it for un-used intents
 intents = discord.Intents.all()
 intents.typing = False
 
@@ -102,9 +102,9 @@ class SuperiorSpork(commands.Bot):
             cog = ".".join(file.parts).removesuffix(".py")
             try:
                 await self.load_extension(cog)
-                print(f"Loaded {cog}")
+                _logger.info("Extension: %s has been loaded!", cog)
             except Exception as error:
-                _logger.exception(f"Failed to load cog: {cog}\n{error}")
+                _logger.exception("Failed to load cog: %s \n%s", cog, error)
         ###
 
         os.environ["JISHAKU_NO_UNDERSCORE"] = "True"
