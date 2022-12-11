@@ -1,29 +1,41 @@
 import logging
 import os
 import pathlib
+import random
+from datetime import time, timezone
+from typing import Optional
 
 import discord
 from discord import app_commands
 from discord.app_commands import Choice
 from discord.ext import commands, tasks
 
-from utils import checks, libs
+from utils import libs
 
 _logger = logging.getLogger(__name__)
 
 
-class BotLogs(commands.Cog, name="bot logs"):
+class BotLogs(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.GUILD_LOG_CHANNEL_ID = bot.config.get("guild_join_leave_log_channel")
         self.presence_loop.start()
 
     def cog_unload(self):
         self.presence_loop.cancel()
 
-    @tasks.loop(minutes=15)
+    @tasks.loop(
+        time=[
+            time(hour=6, tzinfo=timezone.utc),
+            time(hour=12, tzinfo=timezone.utc),
+            time(hour=18, tzinfo=timezone.utc),
+            time(hour=0, tzinfo=timezone.utc),
+        ]
+    )
     async def presence_loop(self):
-        status = discord.Activity(type=discord.ActivityType.watching, name=f"over {len(self.bot.guilds):,} servers")
-        await self.bot.change_presence(status=discord.Status.idle, activity=status)
+        random_status = random.choice([discord.Status.online, discord.Status.dnd, discord.Status.idle])
+        activity = discord.Activity(type=discord.ActivityType.watching, name=f"over {len(self.bot.guilds):,} servers")
+        await self.bot.change_presence(status=random_status, activity=activity)
 
     @presence_loop.before_loop
     async def before_presence(self):
@@ -33,7 +45,7 @@ class BotLogs(commands.Cog, name="bot logs"):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        joinLogChannel = self.bot.get_channel(1018775340333670430)
+        log_channel = self.bot.get_channel(self.GUILD_LOG_CHANNEL_ID)
         em = discord.Embed(
             title="Joined a Server",
             description=f"Name: {guild.name}\nOwner: {guild.owner}\nMembers: {len(guild.members):,}",
@@ -44,11 +56,11 @@ class BotLogs(commands.Cog, name="bot logs"):
         else:
             em.set_thumbnail(url='https://cdn.discordapp.com/embed/avatars/1.png')
         em.set_footer(text=f"Guild ID: {guild.id}")
-        await joinLogChannel.send(embed=em)
+        await log_channel.send(embed=em)
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
-        joinLogChannel = self.bot.get_channel(1018775340333670430)
+        log_channel = self.bot.get_channel(self.GUILD_LOG_CHANNEL_ID)
         em = discord.Embed(
             title="Left a Server",
             description=f"Name: {guild.name}\nOwner: {guild.owner}\nMembers: {len(guild.members):,}",
@@ -59,7 +71,7 @@ class BotLogs(commands.Cog, name="bot logs"):
         else:
             em.set_thumbnail(url='https://cdn.discordapp.com/embed/avatars/1.png')
         em.set_footer(text=f"Guild ID: {guild.id}")
-        await joinLogChannel.send(embed=em)
+        await log_channel.send(embed=em)
 
     @app_commands.command(name='cog', description='Reload, unload or load cogs!')
     @app_commands.choices(
@@ -71,8 +83,8 @@ class BotLogs(commands.Cog, name="bot logs"):
             Choice(name='reload all', value='reloadall'),
         ]
     )
-    @checks.is_real_owner()
-    async def cog(self, interaction: discord.Interaction, options: Choice[str], extension: str = None):
+    @commands.is_owner()
+    async def cog(self, interaction: discord.Interaction, options: Choice[str], extension: Optional[str]):
         if options.value == 'load':
             try:
                 await self.bot.load_extension(extension)
@@ -122,11 +134,9 @@ class BotLogs(commands.Cog, name="bot logs"):
         ][:25]
 
     @commands.command(name="module", aliases=['m'])
-    @checks.is_real_owner()
-    async def module(self, ctx, option=None, *, extension=None):
-        if option is None:
-            return await ctx.send(f"Usage: `{ctx.clean_prefix}module <load[l]/unload[u]/reload[r]> <module>`")
-        elif option == 'l':
+    @commands.is_owner()
+    async def module(self, ctx, option, *, extension: str = "all"):
+        if option == 'l':
             extension = extension.replace(" ", "_")
             await self.bot.load_extension(f'cogs.{extension}')
             await ctx.send(f'Loaded {extension} cog!')
