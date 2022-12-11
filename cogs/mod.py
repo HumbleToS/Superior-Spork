@@ -200,7 +200,7 @@ class Moderation(commands.Cog, name="moderation"):
 
     @commands.command()
     @commands.has_permissions(ban_members=True)
-    @is_real_owner()
+    @commands.is_owner()
     async def massunban(self, ctx, *users: discord.User):
         unbanned_list = []
         for i in users:

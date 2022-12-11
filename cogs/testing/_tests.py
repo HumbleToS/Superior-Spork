@@ -110,7 +110,7 @@ class Testing(commands.Cog, name="Testing"):
         self.bot = bot
 
     @commands.command()
-    @checks.is_real_owner()
+    @commands.is_owner()
     async def ii(self, ctx, invite: str):
         fetching = await ctx.send("Fetching Invite Info...")
         inv = await self.bot.fetch_invite(invite, with_counts=True, with_expiration=True)

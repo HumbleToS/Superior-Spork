@@ -116,7 +116,7 @@ class DeveloperCommands(commands.Cog, name="developer"):
 
     # sets a reminder for a user
     @commands.command(aliases=["reminder"])
-    @is_admin()
+    @commands.is_owner()
     async def remind(self, ctx, time: int, *, message: str):
         await ctx.send(
             f'I set your reminder for "`{message}`"',
@@ -133,7 +133,7 @@ class DeveloperCommands(commands.Cog, name="developer"):
 
     # shows admin help command
     @commands.command()
-    @is_admin()
+    @commands.is_owner()
     async def admin(self, ctx):
         adm_cmds = [
             f"`{command.name}` {f' - {command.description}' if command.description else ''} {'' if len(command.aliases) == 0 else f'`{command.aliases}`'} {'' if command.usage is None else f'`[{command.usage}]`'}"
@@ -151,7 +151,7 @@ class DeveloperCommands(commands.Cog, name="developer"):
         invoke_without_command=True,
         description="List all servers the bot is in",
     )
-    @is_real_owner()
+    @commands.is_owner()
     async def list_servers(self, ctx):
         server_list = [
             "Guild Name: {} | Guild ID: {} | Member Count: {:,}".format(guild.name, guild.id, len(guild.members))
@@ -166,50 +166,11 @@ class DeveloperCommands(commands.Cog, name="developer"):
             await ctx.send(m)
 
     @list_servers.command(name="leave", description="Leave a server")
-    @is_real_owner()
+    @commands.is_owner()
     async def leave_server(self, ctx, guild: discord.Guild):
         guild_name = guild.name
         await guild.leave()
         await ctx.send(f"I have left `{guild_name}`")
-
-    @commands.command(name="eval")
-    @eval_perms()
-    async def _eval(self, ctx, *, body: str):
-        """
-        Executes code within a discord bot
-        """
-        env = {
-            "bot": self.bot,
-            "ctx": ctx,
-            "channel": ctx.channel,
-            "author": ctx.author,
-            "guild": ctx.guild,
-            "message": ctx.message,
-            "_": self._last_result,
-        } | globals()
-
-        body = self.cleanup_code(body)
-        stdout = io.StringIO()
-        to_compile = f'async def func():\n{textwrap.indent(body, "  ")}'
-        try:
-            exec(to_compile, env)
-        except Exception as e:
-            return await ctx.send(f"```\n{e.__class__.__name__}: {e}\n```")
-        func = env["func"]
-        try:
-            with redirect_stdout(stdout):
-                ret = await func()
-        except Exception as e:
-            value = stdout.getvalue()
-            await ctx.send(f"```\n{value}{traceback.format_exc()}\n```")
-        else:
-            value = stdout.getvalue()
-            if ret is None:
-                if value:
-                    await ctx.send(f"```\n{value}\n```")
-            else:
-                self._last_result = ret
-                await ctx.send(f"```\n{value}{ret}\n```")
 
 
 async def setup(bot):
