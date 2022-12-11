@@ -4,7 +4,8 @@ import traceback
 
 import discord
 from discord.ext import commands
-from utils import libs, checks
+
+from utils import checks, libs
 
 
 class ErrorHandler(commands.Cog, name="error handler"):
@@ -52,8 +53,6 @@ class ErrorHandler(commands.Cog, name="error handler"):
             )
         elif isinstance(error, checks.NotGuildOwner):
             return await ctx.send(f'The command `{command_used}` can only be used by the server owner.')
-        elif isinstance(error, checks.NotBotAdmin):
-            return await ctx.send(f'The command `{command_used}` can only be used by bot admins.')
         else:
             print(f"Ignoring exception in command {ctx.command}", file=sys.stderr)
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
