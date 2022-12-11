@@ -20,7 +20,7 @@ async def build(user='postgres', password='password', database='superior_spork',
 async def connect_create_if_not_exists(user='postgres', password='password', database='superior_spork', host='127.0.0.1'):
     try:
         conn = await asyncpg.connect(user=user, password=password, database=database, host=host)
-        print(f"Database '{database}' already exists")
+        _logger.info(f"Database '{database}' already exists")
         return conn
     except asyncpg.InvalidCatalogNameError:
         sys_conn = await asyncpg.connect(database='template1', user='postgres')
@@ -28,7 +28,7 @@ async def connect_create_if_not_exists(user='postgres', password='password', dat
         await sys_conn.close()
 
         conn = await asyncpg.connect(user=user, password=password, database=database, host=host)
-        print(f"Database '{database}' has been created")
+        _logger.info(f"Database '{database}' has been created")
         return conn
 
 
